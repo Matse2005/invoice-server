@@ -4,7 +4,9 @@ use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 use App\Models\InvoiceLink;
 use Spatie\Browsershot\Browsershot;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\LaravelPdf\Facades\Pdf;
+
+// use Barryvdh\DomPDF\Facade\Pdf;
 
 use function Spatie\LaravelPdf\Support\pdf;
 
@@ -31,18 +33,11 @@ Route::get('/invoice/view/{token}', function (string $token) {
     $invoice = Invoice::findOrFail($invoiceLink->invoice_id);
     $invoiceLink->delete();
 
-    // $pdf = pdf()
-    //     ->view('invoice', ['invoice' => $invoice]);
+    $pdf = Pdf()
+        ->view('invoice', ['invoice' => $invoice]);
 
-    // if (app()->environment('production')) {
-    //     $pdf->withBrowsershot(function (Browsershot $browsershot) {
-    //         $browsershot->setChromePath("/usr/bin/chromium-browser")
-    //             ->setCustomTempPath(storage_path());
-    //     });
-    // }
+    return $pdf->name('pdf.pdf');
 
-    // return $pdf->name('pdf.pdf');
-
-    $pdf = Pdf::loadView('invoice', ['invoice' => $invoice]);
-    return $pdf->stream('factuur-' . $invoice->number . '.pdf');
+    // $pdf = Pdf::loadView('invoice', ['invoice' => $invoice]);
+    // return $pdf->stream('factuur-' . $invoice->number . '.pdf');
 });
