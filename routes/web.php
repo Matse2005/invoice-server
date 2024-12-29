@@ -14,6 +14,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/status', function () {
+    echo "Server is up and running...";
+    return;
+});
+
 Route::get('/invoice/{id}', function (int $id) {
     $invoice = Invoice::findOrFail($id);
     // return pdf()
@@ -33,8 +38,14 @@ Route::get('/invoice/view/{token}', function (string $token) {
     $invoice = Invoice::findOrFail($invoiceLink->invoice_id);
     $invoiceLink->delete();
 
-    $pdf = Pdf()
-        ->view('invoice', ['invoice' => $invoice]);
+    $browsershot = Browsershot::html(view('invoice', ['invoice' => $invoice])->render())
+        ->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
+        ->setOption('executablePath', env('BROWSERLESS_URL', 'https://chrome.browserless.io?token=YOUR_BROWSERLESS_API_TOKEN'));
+
+
+    // $pdf = Pdf()->withBrowsershot($browsershot)->view('invoice', ['invoice' => $invoice]);
+    $pdf = Pdf::loadView('invoice', ['invoice' => $invoice])
+        ->withBrowsershot($browsershot);
 
     return $pdf->name('pdf.pdf');
 
