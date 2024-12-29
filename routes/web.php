@@ -14,7 +14,7 @@ function generateInvoicePdf(int $invoiceId)
 
     $response = Http::withHeaders([
         'Content-Type' => 'application/json'
-    ])->post('https://chrome.browserless.io/pdf?token=YOUR_API_TOKEN_HERE', [
+    ])->post(env('BROWSERLESS_URL', 'https://production-sfo.browserless.io/pdf?token=YOUR_API_TOKEN_HERE'), [
         'html' => $view,
         'options' => [
             'landscape' => false,
