@@ -108,7 +108,7 @@
                     @foreach (json_decode($invoice->items) as $item)
                         @php
                             $total += $item->price * $item->amount;
-                            $btw += (($item->price * $item->amount) / 100) * $item->btw;
+                            $btw += !$invoice->btw ? 0 : (($item->price * $item->amount) / 100) * $item->btw;
                             $longer += (int) floor(strlen($item->description) / 80);
                         @endphp
                         <div class="grid items-center grid-cols-32">
